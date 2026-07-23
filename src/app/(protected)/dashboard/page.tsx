@@ -61,12 +61,12 @@ export default async function DashboardPage() {
       timeZone: 'Asia/Singapore', hour: 'numeric', hour12: false,
     }).format(today)
   )
-  const greeting = sgtHour < 12 ? 'GOOD MORNING' : sgtHour < 18 ? 'GOOD AFTERNOON' : 'GOOD EVENING'
+  const greeting = sgtHour < 12 ? 'Good morning' : sgtHour < 18 ? 'Good afternoon' : 'Good evening'
 
   const dateLabel = today.toLocaleDateString('en-SG', {
     timeZone: 'Asia/Singapore',
-    weekday: 'short', day: '2-digit', month: 'short', year: 'numeric',
-  }).toUpperCase()
+    weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
+  })
 
   const weekday = today.toLocaleDateString('en-SG', {
     timeZone: 'Asia/Singapore', weekday: 'long',
@@ -74,84 +74,57 @@ export default async function DashboardPage() {
 
   const latestLesson = latestLessons?.[0] ?? null
   const lessonAuthor = latestLesson
-    ? ((latestLesson.profiles as { ops_name?: string; full_name?: string } | null)?.ops_name ?? 'UNKNOWN')
+    ? ((latestLesson.profiles as { ops_name?: string; full_name?: string } | null)?.ops_name ?? 'Unknown')
     : null
 
   return (
     <div className="space-y-5">
 
-      {/* ── Header ── */}
+      {/* Header */}
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-[10px] font-mono tracking-[0.3em] text-blue-500 dark:text-blue-400 mb-1">
-            {greeting}
-          </p>
-          <h1 className="text-3xl font-bold tracking-tight">
-            {profile.ops_name || profile.full_name}
+          <h1 className="text-2xl font-bold tracking-tight">
+            {greeting}, {profile.ops_name || profile.full_name}
           </h1>
-          <p className="mt-1 text-[10px] font-mono tracking-[0.2em] text-muted-foreground">
-            {dateLabel}
-          </p>
+          <p className="mt-0.5 text-sm text-muted-foreground">{dateLabel}</p>
         </div>
-        <div className="shrink-0 flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5">
+        <div className="shrink-0 flex items-center gap-1.5 rounded-full border border-emerald-400/40 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="text-[10px] font-mono tracking-[0.15em] text-emerald-600 dark:text-emerald-400">COURSE ACTIVE</span>
+          <span className="text-xs font-medium text-emerald-700 dark:text-emerald-400">Live</span>
         </div>
       </div>
 
-      {/* ── Parade State ── */}
+      {/* Parade State */}
       <Link href="/parade-state" className="group block">
-        <Card className="transition-colors group-hover:bg-accent/40 cursor-pointer ring-1 ring-blue-500/20 dark:ring-blue-500/15">
+        <Card className="transition-all group-hover:shadow-md group-hover:-translate-y-0.5 cursor-pointer">
           <CardHeader>
             <div className="flex items-center gap-2.5">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 dark:bg-blue-500/15">
-                <CalendarRange className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-900/40">
+                <CalendarRange className="h-4.5 w-4.5 text-indigo-600 dark:text-indigo-400" />
               </div>
               <div>
-                <p className="text-[10px] font-mono tracking-[0.25em] text-blue-500 dark:text-blue-400">
-                  PARADE STATE
-                </p>
-                <CardTitle className="text-sm font-semibold">Daily Strength Report · {weekday}</CardTitle>
+                <CardTitle className="text-base font-bold">Parade State</CardTitle>
+                <p className="text-xs text-muted-foreground">Strength as of {weekday}</p>
               </div>
             </div>
             <CardAction>
-              <div className="flex items-center gap-1.5 text-muted-foreground/50 group-hover:text-muted-foreground transition-colors">
-                <span className="hidden sm:block text-[10px] font-mono tracking-widest">VIEW FULL</span>
-                <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-              </div>
+              <span className="flex items-center gap-1 text-xs text-muted-foreground/60 group-hover:text-primary transition-colors">
+                View all
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+              </span>
             </CardAction>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-4 gap-2.5">
               {[
-                {
-                  label: 'IN CAMP',
-                  value: inCamp,
-                  color: 'text-emerald-600 dark:text-emerald-400',
-                  bg: 'bg-emerald-50 dark:bg-emerald-950/50 ring-1 ring-emerald-200/80 dark:ring-emerald-800/40',
-                },
-                {
-                  label: 'OUT OF CAMP',
-                  value: outOfCamp,
-                  color: 'text-sky-600 dark:text-sky-400',
-                  bg: 'bg-sky-50 dark:bg-sky-950/50 ring-1 ring-sky-200/80 dark:ring-sky-800/40',
-                },
-                {
-                  label: 'MEDICAL / RSO',
-                  value: medical,
-                  color: 'text-amber-600 dark:text-amber-400',
-                  bg: 'bg-amber-50 dark:bg-amber-950/50 ring-1 ring-amber-200/80 dark:ring-amber-800/40',
-                },
-                {
-                  label: 'NOT UPDATED',
-                  value: notUpdated,
-                  color: 'text-rose-600 dark:text-rose-400',
-                  bg: 'bg-rose-50 dark:bg-rose-950/50 ring-1 ring-rose-200/80 dark:ring-rose-800/40',
-                },
+                { label: 'In Camp', value: inCamp, color: 'text-emerald-700 dark:text-emerald-300', bg: 'bg-emerald-50 dark:bg-emerald-950/50 ring-1 ring-emerald-200 dark:ring-emerald-800/50' },
+                { label: 'Out of Camp', value: outOfCamp, color: 'text-sky-700 dark:text-sky-300', bg: 'bg-sky-50 dark:bg-sky-950/50 ring-1 ring-sky-200 dark:ring-sky-800/50' },
+                { label: 'Medical / RSO', value: medical, color: 'text-amber-700 dark:text-amber-300', bg: 'bg-amber-50 dark:bg-amber-950/50 ring-1 ring-amber-200 dark:ring-amber-800/50' },
+                { label: 'Not Updated', value: notUpdated, color: 'text-rose-700 dark:text-rose-300', bg: 'bg-rose-50 dark:bg-rose-950/50 ring-1 ring-rose-200 dark:ring-rose-800/50' },
               ].map(({ label, value, color, bg }) => (
-                <div key={label} className={`rounded-lg p-3 text-center ${bg}`}>
-                  <p className={`text-3xl font-bold font-mono tabular-nums ${color}`}>{value}</p>
-                  <p className={`text-[9px] font-mono tracking-[0.1em] mt-1 leading-tight ${color} opacity-70`}>{label}</p>
+                <div key={label} className={`rounded-xl p-3 text-center ${bg}`}>
+                  <p className={`text-3xl font-bold tabular-nums ${color}`}>{value}</p>
+                  <p className="text-[10px] text-muted-foreground mt-1 leading-tight">{label}</p>
                 </div>
               ))}
             </div>
@@ -159,32 +132,27 @@ export default async function DashboardPage() {
         </Card>
       </Link>
 
-      {/* ── Secondary widgets ── */}
+      {/* Secondary widgets */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
         {/* Directory */}
         <Link href="/directory" className="group block">
-          <Card className="h-full transition-colors group-hover:bg-accent/40 cursor-pointer">
+          <Card className="h-full transition-all group-hover:shadow-md group-hover:-translate-y-0.5 cursor-pointer">
             <CardHeader>
               <div className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-500/10 dark:bg-violet-500/15">
-                  <Users className="h-4 w-4 text-violet-600 dark:text-violet-400" />
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-900/40">
+                  <Users className="h-4.5 w-4.5 text-violet-600 dark:text-violet-400" />
                 </div>
-                <div>
-                  <p className="text-[10px] font-mono tracking-[0.25em] text-violet-500 dark:text-violet-400">DIRECTORY</p>
-                  <CardTitle className="text-sm font-semibold">Personnel</CardTitle>
-                </div>
+                <CardTitle className="text-base font-bold">Directory</CardTitle>
               </div>
               <CardAction>
-                <ArrowRight className="h-4 w-4 text-muted-foreground/40 mt-1 transition-transform group-hover:translate-x-0.5" />
+                <ArrowRight className="h-4 w-4 text-muted-foreground/40 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
               </CardAction>
             </CardHeader>
             <CardContent className="space-y-3">
               <div>
-                <p className="text-4xl font-bold font-mono tabular-nums">{totalMembers}</p>
-                <p className="text-[10px] font-mono tracking-[0.2em] text-muted-foreground mt-0.5">
-                  PERSONNEL ON STRENGTH
-                </p>
+                <p className="text-4xl font-bold tabular-nums">{totalMembers}</p>
+                <p className="text-xs text-muted-foreground mt-0.5">course members</p>
               </div>
               <div className="flex -space-x-1.5">
                 {(profiles ?? []).slice(0, 7).map((p) => (
@@ -196,7 +164,7 @@ export default async function DashboardPage() {
                   </div>
                 ))}
                 {totalMembers > 7 && (
-                  <div className="h-7 w-7 rounded-full bg-muted border-2 border-card flex items-center justify-center text-[10px] font-mono font-bold text-muted-foreground">
+                  <div className="h-7 w-7 rounded-full bg-muted border-2 border-card flex items-center justify-center text-[10px] font-bold text-muted-foreground">
                     +{totalMembers - 7}
                   </div>
                 )}
@@ -207,34 +175,29 @@ export default async function DashboardPage() {
 
         {/* Roles */}
         <Link href="/roles" className="group block">
-          <Card className="h-full transition-colors group-hover:bg-accent/40 cursor-pointer">
+          <Card className="h-full transition-all group-hover:shadow-md group-hover:-translate-y-0.5 cursor-pointer">
             <CardHeader>
               <div className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 dark:bg-amber-500/15">
-                  <Briefcase className="h-4 w-4 text-amber-600 dark:text-amber-400" />
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-100 dark:bg-amber-900/40">
+                  <Briefcase className="h-4.5 w-4.5 text-amber-600 dark:text-amber-400" />
                 </div>
-                <div>
-                  <p className="text-[10px] font-mono tracking-[0.25em] text-amber-500 dark:text-amber-400">ROLES</p>
-                  <CardTitle className="text-sm font-semibold">Appointments</CardTitle>
-                </div>
+                <CardTitle className="text-base font-bold">Roles</CardTitle>
               </div>
               <CardAction>
-                <ArrowRight className="h-4 w-4 text-muted-foreground/40 mt-1 transition-transform group-hover:translate-x-0.5" />
+                <ArrowRight className="h-4 w-4 text-muted-foreground/40 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
               </CardAction>
             </CardHeader>
             <CardContent>
               {(roles ?? []).length === 0 ? (
-                <p className="text-[10px] font-mono tracking-widest text-muted-foreground">NO ROLES CONFIGURED</p>
+                <p className="text-xs text-muted-foreground">No roles set up yet.</p>
               ) : (
                 <ul className="space-y-2">
                   {(roles ?? []).map((role) => {
                     const holder = role.profiles as { ops_name?: string; full_name?: string } | null
                     return (
                       <li key={role.id} className="flex items-center justify-between gap-3">
-                        <span className="text-[11px] font-mono text-muted-foreground truncate uppercase tracking-wide">
-                          {role.title}
-                        </span>
-                        <span className="text-[11px] font-mono font-semibold shrink-0">
+                        <span className="text-xs text-muted-foreground truncate">{role.title}</span>
+                        <span className="text-xs font-semibold shrink-0">
                           {holder
                             ? (holder.ops_name || holder.full_name)
                             : <span className="text-muted-foreground/40">TBC</span>
@@ -249,32 +212,31 @@ export default async function DashboardPage() {
           </Card>
         </Link>
 
-        {/* Lessons Learned */}
+        {/* Lessons */}
         <Link href="/lessons" className="group block">
-          <Card className="h-full transition-colors group-hover:bg-accent/40 cursor-pointer">
+          <Card className="h-full transition-all group-hover:shadow-md group-hover:-translate-y-0.5 cursor-pointer">
             <CardHeader>
               <div className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 dark:bg-emerald-500/15">
-                  <BookOpen className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-900/40">
+                  <BookOpen className="h-4.5 w-4.5 text-emerald-600 dark:text-emerald-400" />
                 </div>
-                <div>
-                  <p className="text-[10px] font-mono tracking-[0.25em] text-emerald-500 dark:text-emerald-400">LESSONS LEARNED</p>
-                  <CardTitle className="text-sm font-semibold">Knowledge Base</CardTitle>
-                </div>
+                <CardTitle className="text-base font-bold">Lessons Learned</CardTitle>
               </div>
               <CardAction>
-                <ArrowRight className="h-4 w-4 text-muted-foreground/40 mt-1 transition-transform group-hover:translate-x-0.5" />
+                <ArrowRight className="h-4 w-4 text-muted-foreground/40 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
               </CardAction>
             </CardHeader>
             <CardContent>
               {latestLesson ? (
-                <div className="space-y-1.5">
-                  <p className="text-[10px] font-mono tracking-[0.15em] text-muted-foreground">LATEST GEM</p>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-medium uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
+                    Latest gem
+                  </p>
                   <p className="text-sm font-medium line-clamp-2 leading-snug">{latestLesson.title}</p>
-                  <p className="text-[10px] font-mono text-muted-foreground">— {lessonAuthor}</p>
+                  <p className="text-xs text-muted-foreground">— {lessonAuthor}</p>
                 </div>
               ) : (
-                <p className="text-[10px] font-mono tracking-widest text-muted-foreground">NO ENTRIES YET</p>
+                <p className="text-xs text-muted-foreground">No lessons posted yet.</p>
               )}
             </CardContent>
           </Card>
@@ -282,27 +244,24 @@ export default async function DashboardPage() {
 
         {/* Resources */}
         <Link href="/resources" className="group block">
-          <Card className="h-full transition-colors group-hover:bg-accent/40 cursor-pointer">
+          <Card className="h-full transition-all group-hover:shadow-md group-hover:-translate-y-0.5 cursor-pointer">
             <CardHeader>
               <div className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-cyan-500/10 dark:bg-cyan-500/15">
-                  <FolderOpen className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-100 dark:bg-cyan-900/40">
+                  <FolderOpen className="h-4.5 w-4.5 text-cyan-600 dark:text-cyan-400" />
                 </div>
-                <div>
-                  <p className="text-[10px] font-mono tracking-[0.25em] text-cyan-500 dark:text-cyan-400">RESOURCES</p>
-                  <CardTitle className="text-sm font-semibold">Files & Docs</CardTitle>
-                </div>
+                <CardTitle className="text-base font-bold">Resources</CardTitle>
               </div>
               <CardAction>
-                <ArrowRight className="h-4 w-4 text-muted-foreground/40 mt-1 transition-transform group-hover:translate-x-0.5" />
+                <ArrowRight className="h-4 w-4 text-muted-foreground/40 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
               </CardAction>
             </CardHeader>
             <CardContent>
-              <p className="text-4xl font-bold font-mono tabular-nums">{resourceCount}</p>
-              <p className="text-[10px] font-mono tracking-[0.15em] text-muted-foreground mt-0.5">
+              <p className="text-4xl font-bold tabular-nums">{resourceCount}</p>
+              <p className="text-xs text-muted-foreground mt-0.5">
                 {resourceCount === 0
-                  ? 'NO FILES UPLOADED'
-                  : `${categoryCount} ${categoryCount === 1 ? 'CATEGORY' : 'CATEGORIES'}`}
+                  ? 'No files uploaded yet'
+                  : `${categoryCount} ${categoryCount === 1 ? 'category' : 'categories'}`}
               </p>
             </CardContent>
           </Card>
