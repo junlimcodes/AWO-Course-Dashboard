@@ -2,17 +2,7 @@
 
 ## Who This Is For
 
-Jun is a commissioned Singapore Air Force officer about to start a 6-month Air Warfare Officer (AWO) course at Paya Lebar Air Force Base (Air Force Training Command). Jun is likely the Course IC (In Charge) — responsible for the wellbeing and accountability of all course mates. The course will have ~10–15 people, mostly cadets. AWO specialisation is TBD (ATC / ABM / ADW).
-
----
-
-## Why This Site Was Built
-
-To save time and reduce friction for the course. Key pain points it solves:
-- Commanders asking "where is everyone?" → Parade State page
-- Course mates needing each other's contacts → Directory page
-- Sharing notes and lessons from training → Lessons Learned + Resources pages
-- Knowing who is responsible for what → Roles & Responsibilities page
+Jun is a commissioned Singapore Air Force officer running a 6-month Air Warfare Officer (AWO) course at Paya Lebar Air Force Base (Air Force Training Command) as Course IC. The course has ~15 members.
 
 ---
 
@@ -22,60 +12,14 @@ A full-stack web portal with 8 pages:
 
 | Page | Purpose |
 |---|---|
-| `/login` | Username + password sign-in (no email field visible to users) |
-| `/dashboard` | Today's strength summary (IC/OOC/Medical/Not Updated) + quick links |
-| `/parade-state` | Mon–Sun weekly grid for all members; each person updates their own row |
-| `/directory` | Contact cards (phone, Telegram, WhatsApp, email); users edit their own |
-| `/roles` | Course appointments with descriptions and holders (admin manages) |
-| `/lessons` | Anyone can post lessons learned / good gems; expandable card list |
-| `/resources` | File library (PDFs, PPTs) organised by category; anyone can upload |
+| `/login` | Username + password sign-in (no email shown to users) |
+| `/dashboard` | Widget-based home: parade state hero + 4 section widgets |
+| `/parade-state` | Today's status breakdown by name + weekly Mon–Sun grid |
+| `/directory` | Contact cards (phone, Telegram, WhatsApp, email) |
+| `/roles` | Course appointments and holders (admin manages) |
+| `/lessons` | Shared lessons learned / gems |
+| `/resources` | File library (PDFs, PPTs) with signed download URLs |
 | `/admin` | Create accounts, toggle admin rights, reset passwords |
-
----
-
-## Key Design Decisions
-
-### Authentication
-- Login is **username + password only** — no email field shown to users
-- Internally, the app converts `username` → `username@awo-course.app` for Supabase auth
-- Example: type `JLIM` as username, enter password → signed in
-- You (Course IC) + one other person are admins; everyone else is a standard member
-
-### Parade State
-- Full Mon–Sun grid (not just weekdays — includes Sat/Sun for book-in/book-out)
-- Everyone updates their row by **Sunday** for the upcoming week
-- Ad-hoc updates allowed any day
-- Statuses: **In Camp (IC)**, **Out of Camp (OOC)**, **RSO**, **RSI**, **Medical Appt (MA)**
-- Each day has a free-text notes field (e.g. "Medical appt at NUH, back by 1400")
-- Users can only edit their own row; admins can edit anyone's
-- Week navigation via URL: `/parade-state?week=2025-07-21`
-
-### Directory
-- Shows all course members as cards
-- Contact info: phone, Telegram, WhatsApp, personal email
-- Each person edits their own contact details after logging in
-
-### Roles & Responsibilities
-- Common appointments: Course IC, Admin IC, Sports IC, Book In/Book Out IC
-- Admin can add, edit, delete roles and assign holders
-- Anyone can view
-
-### Lessons Learned
-- Anyone can post; anyone can delete their own
-- Admins can delete any entry
-- Expandable card format with author name and date
-
-### Resources (Files)
-- Upload PDFs, PPTs, DOCX to Supabase Storage
-- Organised into categories (e.g. "ATC Notes", "ADW Notes", "Doctrine", etc.)
-- Download via signed URLs (secure, 1-hour expiry)
-- Admin or uploader can delete files
-
-### Design
-- Clean, minimal, professional
-- **Both light and dark mode** (toggle in sidebar/header)
-- Mobile-first — works well on phone (horizontal scroll on parade state grid)
-- No course name/logo yet — placeholder is "AWO Course" until course number is assigned
 
 ---
 
@@ -85,140 +29,145 @@ A full-stack web portal with 8 pages:
 |---|---|
 | Framework | Next.js 16.2.11 (App Router, Turbopack) |
 | Language | TypeScript |
-| Styling | Tailwind CSS v4 + shadcn/ui (uses @base-ui/react, NOT Radix) |
-| Backend | Supabase (auth, PostgreSQL database, file storage) |
-| Deployment | Vercel (free tier) |
+| Styling | Tailwind CSS v4 + shadcn/ui (uses **@base-ui/react**, NOT Radix) |
+| Backend | Supabase (auth, PostgreSQL, storage) |
+| Deployment | Vercel (auto-deploys from GitHub) |
 | Theme | next-themes (light/dark toggle) |
 | Icons | lucide-react |
-| Notifications | sonner (toast messages) |
+| Notifications | sonner |
 
-### Important: shadcn in this project uses @base-ui/react
-This is different from the standard shadcn setup. Key API differences:
-- `Button` has **no `asChild` prop** — use a plain `<a>` tag for link buttons
-- `Select.onValueChange` receives `(value: string | null, ...)` — handle the null case
+### shadcn/base-ui API differences (critical — different from standard shadcn)
+- `Button` has **no `asChild`** — use raw `<a>` for link buttons
+- `Select.onValueChange` receives `(value: string | null, ...)` — handle null
 - `TooltipProvider` uses `delay` (not `delayDuration`)
-- `TooltipTrigger` has **no `asChild`** — attach handlers directly to the trigger element
+- `TooltipTrigger` has **no `asChild`** — attach handlers directly
+- `SheetTrigger` has no `asChild` — use controlled `open`/`onOpenChange`
 
-### Next.js 16 Breaking Changes (already handled in code)
-- `middleware.ts` → renamed to `proxy.ts`; export function must be named `proxy`
-- `cookies()`, `headers()`, `params`, `searchParams` are all fully **async** — must `await` them
+### Next.js 16 breaking changes (already handled)
+- `middleware.ts` → renamed to `proxy.ts`; export must be named `proxy`
+- `cookies()`, `headers()`, `params`, `searchParams` are all fully **async**
 
 ---
 
-## Project File Structure
+## GitHub & Deployment
+
+- **Repo:** https://github.com/junlimcodes/AWO-Course-Dashboard
+- **Vercel:** auto-deploys on push to `main`
+- **Supabase project:** `https://rdecfpjockhtboqernbc.supabase.co`
+- **First admin account:** `jlim@awo-course.app` (login username: `jlim`)
+
+---
+
+## Design Decisions
+
+### Authentication
+- Login: username + password only. No email field shown.
+- Internally converts `username` → `username@awo-course.app` for Supabase.
+
+### Layout — No Sidebar
+- Uses a sticky **top nav bar** (`src/components/top-nav.tsx`) instead of a sidebar.
+- Desktop: all nav links visible horizontally.
+- Mobile: hamburger button opens a sheet drawer.
+
+### Background & Theme
+- Background: flat sky-blue (`oklch(0.87 0.05 218)`) — no grid pattern.
+- Cards: pure white so they pop against the blue background.
+- Dark mode: deep slate-blue background.
+- Border radius: 0.75rem (rounded/playful feel).
+
+### Dashboard
+- Widget-based layout — no separate "quick links" section.
+- **Parade State hero widget:** shows `X / Y in camp today` as headline, green progress bar, colour chip breakdown.
+- **4 secondary widgets:** Directory (member count + avatars), Roles (holder list), Lessons (latest gem), Resources (file count).
+
+### Parade State
+- **Today section** (top of page): groups all members by status with names + notes for the current day. Only shown when viewing the current week.
+- **Weekly grid** (below): Mon–Sun interactive grid for planning.
+
+### Parade Statuses
+- In Camp (IC), Out of Camp (OOC), RSO, RSI, Medical Appt (MA)
+- Each day can have free-text notes.
+
+---
+
+## File Structure
 
 ```
 awo-course/
 ├── src/
-│   ├── proxy.ts                    ← Auth protection (Next.js 16 middleware)
+│   ├── proxy.ts                          ← Auth protection (Next.js 16 middleware)
 │   ├── app/
-│   │   ├── layout.tsx              ← Root layout (ThemeProvider, Toaster)
-│   │   ├── page.tsx                ← Redirects to /dashboard or /login
-│   │   ├── (auth)/
-│   │   │   └── login/
-│   │   │       ├── page.tsx        ← Login UI
-│   │   │       ├── login-form.tsx  ← Client form with useActionState
-│   │   │       └── actions.ts      ← login() and logout() server actions
+│   │   ├── globals.css                   ← Theme colours + flat blue background
+│   │   ├── layout.tsx                    ← Root layout (ThemeProvider, Toaster)
+│   │   ├── page.tsx                      ← Redirects to /dashboard or /login
+│   │   ├── (auth)/login/
+│   │   │   ├── page.tsx
+│   │   │   ├── login-form.tsx
+│   │   │   └── actions.ts                ← login() and logout()
 │   │   └── (protected)/
-│   │       ├── layout.tsx          ← Fetches profile, renders Sidebar + MobileHeader
-│   │       ├── dashboard/page.tsx
+│   │       ├── layout.tsx                ← TopNav + <main> full width
+│   │       ├── loading.tsx               ← Spinner shown instantly on navigation
+│   │       ├── dashboard/page.tsx        ← Widget dashboard
 │   │       ├── parade-state/
-│   │       │   ├── page.tsx        ← Reads ?week= param, fetches data
-│   │       │   └── actions.ts      ← upsertParadeState()
+│   │       │   ├── page.tsx              ← Today breakdown + weekly grid
+│   │       │   └── actions.ts
 │   │       ├── directory/
-│   │       │   ├── page.tsx
-│   │       │   ├── directory-client.tsx
-│   │       │   └── actions.ts      ← updateProfile()
 │   │       ├── roles/
-│   │       │   ├── page.tsx
-│   │       │   ├── roles-client.tsx
-│   │       │   └── actions.ts      ← upsertRole(), deleteRole()
 │   │       ├── lessons/
-│   │       │   ├── page.tsx
-│   │       │   ├── lessons-client.tsx
-│   │       │   └── actions.ts      ← addLesson(), deleteLesson()
 │   │       ├── resources/
-│   │       │   ├── page.tsx        ← Generates signed URLs server-side
-│   │       │   ├── resources-client.tsx
-│   │       │   └── actions.ts      ← saveResourceMeta(), deleteResource()
 │   │       └── admin/
-│   │           ├── page.tsx
-│   │           ├── admin-client.tsx
-│   │           └── actions.ts      ← createUser(), updateUserAdmin(), resetPassword()
 │   ├── components/
-│   │   ├── sidebar.tsx             ← Desktop sidebar with nav + user info
-│   │   ├── mobile-header.tsx       ← Mobile top bar + Sheet drawer
+│   │   ├── top-nav.tsx                   ← Sticky top nav (desktop links + mobile sheet)
+│   │   ├── sidebar.tsx                   ← (unused — replaced by top-nav)
+│   │   ├── mobile-header.tsx             ← (unused — replaced by top-nav)
 │   │   ├── theme-toggle.tsx
 │   │   ├── providers/theme-provider.tsx
 │   │   ├── parade-state/
-│   │   │   ├── parade-grid.tsx     ← Interactive Mon–Sun grid
-│   │   │   └── edit-dialog.tsx     ← Status + notes edit dialog
-│   │   ├── directory/
-│   │   │   └── edit-profile-dialog.tsx
-│   │   └── resources/
-│   │       └── upload-dialog.tsx   ← File picker + upload to Supabase Storage
+│   │   │   ├── parade-grid.tsx           ← Interactive Mon–Sun grid
+│   │   │   └── edit-dialog.tsx
+│   │   ├── directory/edit-profile-dialog.tsx
+│   │   └── resources/upload-dialog.tsx
 │   └── lib/
-│       ├── types.ts                ← Shared TypeScript types + status colors/labels
-│       ├── date-utils.ts           ← Week calculation helpers (getMonday, toDayIndex, etc.)
+│       ├── types.ts
+│       ├── date-utils.ts                 ← Week helpers (SGT-safe)
 │       └── supabase/
-│           ├── client.ts           ← Browser Supabase client
-│           ├── server.ts           ← Server Supabase client (async cookies)
-│           └── admin.ts            ← Service role client (for admin user creation)
-├── supabase/
-│   └── schema.sql                  ← Full DB schema: run this in Supabase SQL Editor
-├── .env.local                      ← Supabase credentials (fill these in)
-├── SETUP.md                        ← Step-by-step setup guide
-└── PROJECT_CONTEXT.md              ← This file
+│           ├── client.ts
+│           ├── server.ts
+│           └── admin.ts
+├── supabase/schema.sql                   ← Full DB schema — run once in Supabase SQL Editor
+├── .env.local                            ← Supabase credentials (filled in)
+├── SETUP.md
+└── PROJECT_CONTEXT.md                    ← This file
 ```
 
 ---
 
-## Database Schema (Supabase)
+## Database Schema
 
-### Tables
 - **profiles** — id, username, ops_name, full_name, appointment, contact_number, telegram, whatsapp, email, is_admin
-- **parade_state** — user_id, week_start (always a Monday), day_of_week (0=Mon…6=Sun), status, notes
+- **parade_state** — user_id, week_start (Monday), day_of_week (0=Mon…6=Sun), status, notes
 - **course_roles** — title, description, holder_id, sort_order
 - **lessons** — author_id, title, content
 - **resources** — uploader_id, title, description, category, file_url, file_name, file_size
 
-### Security
-- Row-Level Security (RLS) enabled on all tables
-- Users can only edit their own data; admins can edit everything
-- Storage bucket `resources` is private; files served via signed URLs
-
-### Auto-profile trigger
-When a new auth user is created, a trigger automatically creates their profile row using metadata passed during account creation.
+RLS enabled on all tables. Storage bucket `resources` is private; files served via 1-hour signed URLs.
 
 ---
 
 ## Environment Variables (`.env.local`)
 
 ```
-NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_URL=https://rdecfpjockhtboqernbc.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
 SUPABASE_SERVICE_ROLE_KEY=eyJ...
 ```
 
-Found in: Supabase Dashboard → Project Settings → API
-
 ---
 
-## Next Steps (To Get Live)
+## Things To Do Later
 
-1. **Create Supabase project** at supabase.com (free)
-2. **Run `supabase/schema.sql`** in the Supabase SQL Editor
-3. **Create your admin account** directly in Supabase Auth dashboard, then set `is_admin = true` via SQL
-4. **Fill in `.env.local`** with your Supabase URL and keys
-5. **Run locally**: `npm run dev` → test at http://localhost:3000
-6. **Deploy to Vercel**: push to GitHub, import into Vercel, add env vars
-
----
-
-## Things to Do Later
-
-- [ ] Add course name/number/motto once assigned (replace "AWO Course" throughout)
-- [ ] Set up Telegram group + link it in the site footer or dashboard
-- [ ] Consider adding a shared announcements/noticeboard section
-- [ ] Add a simple calendar/timetable section once training schedule is known
-- [ ] Update course member appointment dropdown options as needed
+- [ ] Add course number/name once assigned (replace "AWO Course" throughout)
+- [ ] Add announcements / noticeboard section
+- [ ] Add training timetable / calendar once schedule is known
+- [ ] Update appointment dropdown options as needed
+- [ ] Consider adding a weekly reminder for course mates to update parade state by Sunday
