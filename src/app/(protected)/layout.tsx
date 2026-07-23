@@ -20,7 +20,7 @@ export default async function ProtectedLayout({ children }: { children: React.Re
   if (!profile) redirect('/login')
 
   return (
-    <div className="flex h-screen overflow-hidden bg-background">
+    <div className="flex h-screen overflow-hidden bg-background tactical-grid">
       <Sidebar profile={profile} />
       <div className="flex flex-col flex-1 min-w-0 overflow-auto">
         <MobileHeader profile={profile} />
