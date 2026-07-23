@@ -81,11 +81,11 @@ export default async function DashboardPage() {
 
       {/* Parade State — hero widget */}
       <Link href="/parade-state" className="group block">
-        <Card className="transition-all group-hover:shadow-lg group-hover:-translate-y-0.5 cursor-pointer">
+        <Card className="transition-all group-hover:shadow-md group-hover:-translate-y-0.5 cursor-pointer">
           <CardHeader>
             <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-900/40">
-                <CalendarRange className="h-4.5 w-4.5 text-indigo-600 dark:text-indigo-400" />
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-100 dark:bg-teal-900/30">
+                <CalendarRange className="h-4.5 w-4.5 text-teal-700 dark:text-teal-400" />
               </div>
               <div>
                 <CardTitle className="text-base font-bold">Parade State</CardTitle>
@@ -110,7 +110,7 @@ export default async function DashboardPage() {
             <div className="space-y-1">
               <div className="h-2.5 rounded-full bg-muted overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-emerald-500 transition-all duration-500"
+                  className="h-full rounded-full bg-primary transition-all duration-500"
                   style={{ width: `${pct}%` }}
                 />
               </div>
@@ -149,8 +149,8 @@ export default async function DashboardPage() {
         <Link href="/directory" className="group block">
           <Card className="h-full transition-all group-hover:shadow-md group-hover:-translate-y-0.5 cursor-pointer">
             <CardHeader>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-900/40">
-                <Users className="h-4.5 w-4.5 text-violet-600 dark:text-violet-400" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-100 dark:bg-teal-900/30">
+                <Users className="h-4.5 w-4.5 text-teal-700 dark:text-teal-400" />
               </div>
               <CardAction>
                 <ArrowRight className="h-4 w-4 text-muted-foreground/40 mt-1 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
@@ -183,8 +183,8 @@ export default async function DashboardPage() {
         <Link href="/roles" className="group block">
           <Card className="h-full transition-all group-hover:shadow-md group-hover:-translate-y-0.5 cursor-pointer">
             <CardHeader>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-100 dark:bg-amber-900/40">
-                <Briefcase className="h-4.5 w-4.5 text-amber-600 dark:text-amber-400" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-100 dark:bg-teal-900/30">
+                <Briefcase className="h-4.5 w-4.5 text-teal-700 dark:text-teal-400" />
               </div>
               <CardAction>
                 <ArrowRight className="h-4 w-4 text-muted-foreground/40 mt-1 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
@@ -217,8 +217,8 @@ export default async function DashboardPage() {
         <Link href="/lessons" className="group block">
           <Card className="h-full transition-all group-hover:shadow-md group-hover:-translate-y-0.5 cursor-pointer">
             <CardHeader>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-900/40">
-                <BookOpen className="h-4.5 w-4.5 text-emerald-600 dark:text-emerald-400" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-100 dark:bg-teal-900/30">
+                <BookOpen className="h-4.5 w-4.5 text-teal-700 dark:text-teal-400" />
               </div>
               <CardAction>
                 <ArrowRight className="h-4 w-4 text-muted-foreground/40 mt-1 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
@@ -228,7 +228,7 @@ export default async function DashboardPage() {
               <CardTitle className="text-base font-bold">Lessons Learned</CardTitle>
               {latestLesson ? (
                 <div className="space-y-1 pt-1">
-                  <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold">Latest gem</p>
+                  <p className="text-xs text-teal-600 dark:text-teal-400 font-semibold">Latest gem</p>
                   <p className="text-sm font-medium line-clamp-3 leading-snug">{latestLesson.title}</p>
                   <p className="text-xs text-muted-foreground">— {lessonAuthor}</p>
                 </div>
@@ -243,8 +243,8 @@ export default async function DashboardPage() {
         <Link href="/resources" className="group block">
           <Card className="h-full transition-all group-hover:shadow-md group-hover:-translate-y-0.5 cursor-pointer">
             <CardHeader>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-cyan-100 dark:bg-cyan-900/40">
-                <FolderOpen className="h-4.5 w-4.5 text-cyan-600 dark:text-cyan-400" />
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-100 dark:bg-teal-900/30">
+                <FolderOpen className="h-4.5 w-4.5 text-teal-700 dark:text-teal-400" />
               </div>
               <CardAction>
                 <ArrowRight className="h-4 w-4 text-muted-foreground/40 mt-1 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
