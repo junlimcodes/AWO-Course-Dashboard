@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { CalendarRange, Users, Briefcase, BookOpen, FolderOpen, ArrowRight } from 'lucide-react'
 import { toWeekStartStr, toDayIndex } from '@/lib/date-utils'
+import { ParadeRing } from '@/components/dashboard/parade-ring'
+import { CountUp } from '@/components/dashboard/count-up'
 
 export const metadata: Metadata = { title: 'Dashboard' }
 
@@ -39,29 +41,30 @@ export default async function DashboardPage() {
   const totalMembers = profiles?.length ?? 0
   const counts: Record<string, number> = {}
   for (const s of todayStates ?? []) counts[s.status] = (counts[s.status] ?? 0) + 1
-  const inCamp = counts['in_camp'] ?? 0
-  const outOfCamp = counts['out_of_camp'] ?? 0
-  const medical = (counts['rso'] ?? 0) + (counts['rsi'] ?? 0) + (counts['medical_appt'] ?? 0)
+  const inCamp     = counts['in_camp'] ?? 0
+  const outOfCamp  = counts['out_of_camp'] ?? 0
+  const medical    = (counts['rso'] ?? 0) + (counts['rsi'] ?? 0) + (counts['medical_appt'] ?? 0)
   const notUpdated = totalMembers - (todayStates?.length ?? 0)
-  const accounted = totalMembers - notUpdated
-  const pct = totalMembers > 0 ? Math.round((accounted / totalMembers) * 100) : 0
+  const accounted  = totalMembers - notUpdated
+  const pct        = totalMembers > 0 ? Math.round((accounted / totalMembers) * 100) : 0
 
-  const resourceCount = resources?.length ?? 0
-  const categoryCount = new Set(resources?.map(r => r.category) ?? []).size
+  const resourceCount  = resources?.length ?? 0
+  const categoryCount  = new Set(resources?.map(r => r.category) ?? []).size
 
   const sgtHour = parseInt(
     new Intl.DateTimeFormat('en-SG', { timeZone: 'Asia/Singapore', hour: 'numeric', hour12: false }).format(today)
   )
-  const greeting = sgtHour < 12 ? 'Good morning' : sgtHour < 18 ? 'Good afternoon' : 'Good evening'
+  const greeting  = sgtHour < 12 ? 'Good morning' : sgtHour < 18 ? 'Good afternoon' : 'Good evening'
   const dateLabel = today.toLocaleDateString('en-SG', {
     timeZone: 'Asia/Singapore', weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
   })
   const weekday = today.toLocaleDateString('en-SG', { timeZone: 'Asia/Singapore', weekday: 'long' })
 
   const latestLesson = latestLessons?.[0] ?? null
-  const lessonAuthor = (latestLesson?.profiles as { ops_name?: string; full_name?: string } | null)?.ops_name
-    ?? (latestLesson?.profiles as { ops_name?: string; full_name?: string } | null)?.full_name
-    ?? 'Unknown'
+  const lessonAuthor =
+    (latestLesson?.profiles as { ops_name?: string; full_name?: string } | null)?.ops_name ??
+    (latestLesson?.profiles as { ops_name?: string; full_name?: string } | null)?.full_name ??
+    'Unknown'
 
   return (
     <div className="space-y-6">
@@ -84,62 +87,58 @@ export default async function DashboardPage() {
       <div className="flex flex-col lg:flex-row gap-4 items-stretch">
 
         {/* ── Parade State — dark hero card ── */}
-        <Link href="/parade-state" className="group block lg:w-[55%] lg:shrink-0">
+        <Link
+          href="/parade-state"
+          className="group block lg:w-[55%] lg:shrink-0"
+          style={{ animation: 'fade-up 0.5s ease both' }}
+        >
           <div
-            className="h-full min-h-[300px] lg:min-h-[520px] rounded-3xl p-7 flex flex-col cursor-pointer transition-all duration-300 group-hover:shadow-2xl group-hover:-translate-y-1"
+            className="h-full min-h-[320px] lg:min-h-[540px] rounded-3xl p-7 flex flex-col cursor-pointer transition-all duration-300 group-hover:shadow-2xl group-hover:-translate-y-1"
             style={{
               background: 'radial-gradient(ellipse at 18% 55%, oklch(0.34 0.16 168 / 0.85) 0%, oklch(0.15 0.04 240) 65%)',
             }}
           >
             {/* Card header */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2.5">
                 <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/10">
                   <CalendarRange className="h-4.5 w-4.5 text-white" />
                 </div>
                 <div>
                   <p className="text-sm font-bold text-white/90">Parade State</p>
-                  <p className="text-xs text-white/45">Today · {weekday}</p>
+                  <p className="text-xs text-white/40">Today · {weekday}</p>
                 </div>
               </div>
-              <span className="flex items-center gap-1 text-xs font-medium text-white/45 group-hover:text-white/80 transition-colors">
+              <span className="flex items-center gap-1 text-xs font-medium text-white/40 group-hover:text-white/75 transition-colors">
                 View details
                 <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
               </span>
             </div>
 
-            {/* Big fraction */}
-            <div className="mt-auto pt-10">
-              <div className="flex items-baseline gap-2">
-                <span className="text-6xl lg:text-8xl font-bold tabular-nums leading-none text-white">{inCamp}</span>
-                <span className="text-3xl lg:text-4xl font-semibold text-white/35 tabular-nums">/ {totalMembers}</span>
-              </div>
-              <p className="text-sm text-white/50 mt-2 font-medium">personnel in camp today</p>
-            </div>
-
-            {/* Progress bar */}
-            <div className="mt-6 space-y-1.5">
-              <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-700"
-                  style={{ width: `${pct}%`, background: 'oklch(0.74 0.18 168)' }}
-                />
-              </div>
-              <p className="text-xs text-white/40">{pct}% accounted for</p>
+            {/* Ring — centred in remaining space */}
+            <div className="flex-1 flex items-center justify-center py-6">
+              <ParadeRing
+                inCamp={inCamp}
+                outOfCamp={outOfCamp}
+                medical={medical}
+                notUpdated={notUpdated}
+                total={totalMembers}
+                pct={pct}
+              />
             </div>
 
             {/* Status chips */}
-            <div className="flex flex-wrap gap-2 mt-5">
+            <div className="flex flex-wrap gap-2 shrink-0">
               <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-400/20 text-teal-200 border border-teal-400/20">
                 {inCamp} In Camp
               </span>
               {outOfCamp > 0 && (
-                <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-white/10 text-white/70 border border-white/10">
+                <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-white/10 text-white/65 border border-white/10">
                   {outOfCamp} Out of Camp
                 </span>
               )}
               {medical > 0 && (
-                <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-white/10 text-white/70 border border-white/10">
+                <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-white/10 text-white/65 border border-white/10">
                   {medical} Medical / RSO
                 </span>
               )}
@@ -156,14 +155,18 @@ export default async function DashboardPage() {
         <div className="grid grid-cols-2 gap-4 lg:flex-1">
 
           {/* Directory — violet */}
-          <Link href="/directory" className="group block">
+          <Link
+            href="/directory"
+            className="group block"
+            style={{ animation: 'fade-up 0.5s ease 0.1s both' }}
+          >
             <div className="h-full min-h-[220px] rounded-3xl p-5 flex flex-col cursor-pointer transition-all duration-300 group-hover:shadow-xl group-hover:scale-[1.02] bg-violet-50 dark:bg-violet-950/50 border border-violet-100 dark:border-violet-800/30">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-900/60">
                 <Users className="h-4.5 w-4.5 text-violet-600 dark:text-violet-400" />
               </div>
               <div className="mt-auto pt-4">
                 <p className="text-[10px] font-bold text-violet-400 dark:text-violet-500 uppercase tracking-widest mb-1">Directory</p>
-                <p className="text-4xl font-bold tabular-nums text-violet-900 dark:text-violet-100">{totalMembers}</p>
+                <CountUp to={totalMembers} className="text-4xl font-bold tabular-nums text-violet-900 dark:text-violet-100" />
                 <p className="text-xs text-violet-400/80 dark:text-violet-500/80 mt-0.5">course members</p>
                 <div className="flex -space-x-1.5 mt-3">
                   {(profiles ?? []).slice(0, 5).map((p) => (
@@ -185,7 +188,11 @@ export default async function DashboardPage() {
           </Link>
 
           {/* Roles — amber */}
-          <Link href="/roles" className="group block">
+          <Link
+            href="/roles"
+            className="group block"
+            style={{ animation: 'fade-up 0.5s ease 0.15s both' }}
+          >
             <div className="h-full min-h-[220px] rounded-3xl p-5 flex flex-col cursor-pointer transition-all duration-300 group-hover:shadow-xl group-hover:scale-[1.02] bg-amber-50 dark:bg-amber-950/50 border border-amber-100 dark:border-amber-800/30">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-100 dark:bg-amber-900/60">
                 <Briefcase className="h-4.5 w-4.5 text-amber-600 dark:text-amber-400" />
@@ -214,7 +221,11 @@ export default async function DashboardPage() {
           </Link>
 
           {/* Lessons — emerald */}
-          <Link href="/lessons" className="group block">
+          <Link
+            href="/lessons"
+            className="group block"
+            style={{ animation: 'fade-up 0.5s ease 0.2s both' }}
+          >
             <div className="h-full min-h-[220px] rounded-3xl p-5 flex flex-col cursor-pointer transition-all duration-300 group-hover:shadow-xl group-hover:scale-[1.02] bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-100 dark:border-emerald-800/30">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-900/60">
                 <BookOpen className="h-4.5 w-4.5 text-emerald-600 dark:text-emerald-400" />
@@ -234,14 +245,18 @@ export default async function DashboardPage() {
           </Link>
 
           {/* Resources — sky */}
-          <Link href="/resources" className="group block">
+          <Link
+            href="/resources"
+            className="group block"
+            style={{ animation: 'fade-up 0.5s ease 0.25s both' }}
+          >
             <div className="h-full min-h-[220px] rounded-3xl p-5 flex flex-col cursor-pointer transition-all duration-300 group-hover:shadow-xl group-hover:scale-[1.02] bg-sky-50 dark:bg-sky-950/50 border border-sky-100 dark:border-sky-800/30">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-100 dark:bg-sky-900/60">
                 <FolderOpen className="h-4.5 w-4.5 text-sky-600 dark:text-sky-400" />
               </div>
               <div className="mt-auto pt-4">
                 <p className="text-[10px] font-bold text-sky-400 dark:text-sky-500 uppercase tracking-widest mb-1">Resources</p>
-                <p className="text-4xl font-bold tabular-nums text-sky-900 dark:text-sky-100">{resourceCount}</p>
+                <CountUp to={resourceCount} className="text-4xl font-bold tabular-nums text-sky-900 dark:text-sky-100" />
                 <p className="text-xs text-sky-400/80 dark:text-sky-500/80 mt-0.5">
                   {resourceCount === 0 ? 'No files yet' : `${categoryCount} ${categoryCount === 1 ? 'category' : 'categories'}`}
                 </p>
