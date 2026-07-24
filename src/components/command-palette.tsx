@@ -7,7 +7,7 @@ import {
   BookOpen, FolderOpen, Settings, CornerDownLeft,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import type { Profile } from '@/lib/types'
+type ProfileSummary = { id: string; full_name: string | null; ops_name: string | null }
 
 const NAV_ITEMS = [
   { id: 'dashboard',    label: 'Dashboard',    href: '/dashboard',    icon: LayoutDashboard },
@@ -29,7 +29,7 @@ type ResultItem = {
   flatIdx: number
 }
 
-export function CommandPalette({ profiles, isAdmin }: { profiles: Profile[]; isAdmin: boolean }) {
+export function CommandPalette({ profiles, isAdmin }: { profiles: ProfileSummary[]; isAdmin: boolean }) {
   const [open, setOpen] = useState(false)
   const [query, setQuery] = useState('')
   const [idx, setIdx] = useState(0)
