@@ -93,7 +93,7 @@ export default async function DashboardPage() {
           style={{ animation: 'fade-up 0.5s ease both' }}
         >
           <div
-            className="h-full min-h-[320px] lg:min-h-[540px] rounded-3xl p-7 flex flex-col cursor-pointer transition-all duration-300 group-hover:shadow-2xl group-hover:-translate-y-1"
+            className="glow-teal h-full min-h-[320px] lg:min-h-[540px] rounded-3xl p-7 flex flex-col cursor-pointer transition-all duration-300 group-hover:shadow-2xl group-hover:-translate-y-1"
             style={{
               background: 'radial-gradient(ellipse at 18% 55%, oklch(0.34 0.16 168 / 0.85) 0%, oklch(0.15 0.04 240) 65%)',
             }}
@@ -160,7 +160,7 @@ export default async function DashboardPage() {
             className="group block"
             style={{ animation: 'fade-up 0.5s ease 0.1s both' }}
           >
-            <div className="h-full min-h-[220px] rounded-3xl p-5 flex flex-col cursor-pointer transition-all duration-300 group-hover:shadow-xl group-hover:scale-[1.02] bg-violet-50 dark:bg-violet-950/50 border border-violet-100 dark:border-violet-800/30">
+            <div className="glow-violet h-full min-h-[220px] rounded-3xl p-5 flex flex-col cursor-pointer transition-all duration-300 group-hover:shadow-xl group-hover:scale-[1.02] bg-violet-50 dark:bg-violet-950/50 border border-violet-100 dark:border-violet-800/30">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-900/60">
                 <Users className="h-4.5 w-4.5 text-violet-600 dark:text-violet-400" />
               </div>
@@ -193,7 +193,7 @@ export default async function DashboardPage() {
             className="group block"
             style={{ animation: 'fade-up 0.5s ease 0.15s both' }}
           >
-            <div className="h-full min-h-[220px] rounded-3xl p-5 flex flex-col cursor-pointer transition-all duration-300 group-hover:shadow-xl group-hover:scale-[1.02] bg-amber-50 dark:bg-amber-950/50 border border-amber-100 dark:border-amber-800/30">
+            <div className="glow-amber h-full min-h-[220px] rounded-3xl p-5 flex flex-col cursor-pointer transition-all duration-300 group-hover:shadow-xl group-hover:scale-[1.02] bg-amber-50 dark:bg-amber-950/50 border border-amber-100 dark:border-amber-800/30">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-100 dark:bg-amber-900/60">
                 <Briefcase className="h-4.5 w-4.5 text-amber-600 dark:text-amber-400" />
               </div>
@@ -226,7 +226,7 @@ export default async function DashboardPage() {
             className="group block"
             style={{ animation: 'fade-up 0.5s ease 0.2s both' }}
           >
-            <div className="h-full min-h-[220px] rounded-3xl p-5 flex flex-col cursor-pointer transition-all duration-300 group-hover:shadow-xl group-hover:scale-[1.02] bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-100 dark:border-emerald-800/30">
+            <div className="glow-emerald h-full min-h-[220px] rounded-3xl p-5 flex flex-col cursor-pointer transition-all duration-300 group-hover:shadow-xl group-hover:scale-[1.02] bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-100 dark:border-emerald-800/30">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-900/60">
                 <BookOpen className="h-4.5 w-4.5 text-emerald-600 dark:text-emerald-400" />
               </div>
@@ -250,7 +250,7 @@ export default async function DashboardPage() {
             className="group block"
             style={{ animation: 'fade-up 0.5s ease 0.25s both' }}
           >
-            <div className="h-full min-h-[220px] rounded-3xl p-5 flex flex-col cursor-pointer transition-all duration-300 group-hover:shadow-xl group-hover:scale-[1.02] bg-sky-50 dark:bg-sky-950/50 border border-sky-100 dark:border-sky-800/30">
+            <div className="glow-sky h-full min-h-[220px] rounded-3xl p-5 flex flex-col cursor-pointer transition-all duration-300 group-hover:shadow-xl group-hover:scale-[1.02] bg-sky-50 dark:bg-sky-950/50 border border-sky-100 dark:border-sky-800/30">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-100 dark:bg-sky-900/60">
                 <FolderOpen className="h-4.5 w-4.5 text-sky-600 dark:text-sky-400" />
               </div>

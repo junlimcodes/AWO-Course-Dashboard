@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, CalendarRange, Users, Briefcase,
-  BookOpen, FolderOpen, Settings, LogOut, Menu,
+  BookOpen, FolderOpen, Settings, LogOut, Menu, Search,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
@@ -66,8 +66,20 @@ export function TopNav({ profile }: { profile: Profile }) {
           ))}
         </nav>
 
+        {/* Desktop search trigger */}
+        <button
+          onClick={() => window.dispatchEvent(new CustomEvent('cmd-palette-open'))}
+          className="hidden md:flex items-center gap-2 ml-auto mr-2 h-8 rounded-lg border bg-muted/40 hover:bg-muted px-3 text-xs text-muted-foreground transition-colors"
+        >
+          <Search className="h-3.5 w-3.5" />
+          <span>Search...</span>
+          <kbd className="ml-1 inline-flex h-4 items-center gap-px rounded border bg-background px-1 text-[9px] font-mono text-muted-foreground/60">
+            ⌘K
+          </kbd>
+        </button>
+
         {/* Right side */}
-        <div className="flex items-center gap-2 ml-auto">
+        <div className="flex items-center gap-2">
           <ThemeToggle />
 
           {/* Desktop: name + sign out */}
@@ -84,7 +96,13 @@ export function TopNav({ profile }: { profile: Profile }) {
             </button>
           </form>
 
-          {/* Mobile: hamburger */}
+          {/* Mobile: search + hamburger */}
+          <button
+            className="md:hidden h-8 w-8 flex items-center justify-center rounded-lg hover:bg-muted transition-colors"
+            onClick={() => window.dispatchEvent(new CustomEvent('cmd-palette-open'))}
+          >
+            <Search className="h-4 w-4 text-muted-foreground" />
+          </button>
           <Button
             variant="ghost"
             size="icon"
