@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { Card, CardContent, CardHeader, CardTitle, CardAction } from '@/components/ui/card'
 import { CalendarRange, Users, Briefcase, BookOpen, FolderOpen, ArrowRight } from 'lucide-react'
 import { toWeekStartStr, toDayIndex } from '@/lib/date-utils'
 
@@ -60,10 +59,12 @@ export default async function DashboardPage() {
   const weekday = today.toLocaleDateString('en-SG', { timeZone: 'Asia/Singapore', weekday: 'long' })
 
   const latestLesson = latestLessons?.[0] ?? null
-  const lessonAuthor = (latestLesson?.profiles as { ops_name?: string; full_name?: string } | null)?.ops_name ?? 'Unknown'
+  const lessonAuthor = (latestLesson?.profiles as { ops_name?: string; full_name?: string } | null)?.ops_name
+    ?? (latestLesson?.profiles as { ops_name?: string; full_name?: string } | null)?.full_name
+    ?? 'Unknown'
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
 
       {/* Header */}
       <div className="flex items-start justify-between gap-4">
@@ -79,186 +80,176 @@ export default async function DashboardPage() {
         </div>
       </div>
 
-      {/* Parade State — hero widget */}
-      <Link href="/parade-state" className="group block">
-        <Card className="transition-all group-hover:shadow-md group-hover:-translate-y-0.5 cursor-pointer">
-          <CardHeader>
-            <div className="flex items-center gap-2.5">
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-teal-100 dark:bg-teal-900/30">
-                <CalendarRange className="h-4.5 w-4.5 text-teal-700 dark:text-teal-400" />
+      {/* Bento Grid */}
+      <div className="flex flex-col lg:flex-row gap-4 items-stretch">
+
+        {/* ── Parade State — dark hero card ── */}
+        <Link href="/parade-state" className="group block lg:w-[55%] lg:shrink-0">
+          <div
+            className="h-full min-h-[300px] lg:min-h-[520px] rounded-3xl p-7 flex flex-col cursor-pointer transition-all duration-300 group-hover:shadow-2xl group-hover:-translate-y-1"
+            style={{
+              background: 'radial-gradient(ellipse at 18% 55%, oklch(0.34 0.16 168 / 0.85) 0%, oklch(0.15 0.04 240) 65%)',
+            }}
+          >
+            {/* Card header */}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white/10">
+                  <CalendarRange className="h-4.5 w-4.5 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-white/90">Parade State</p>
+                  <p className="text-xs text-white/45">Today · {weekday}</p>
+                </div>
               </div>
-              <div>
-                <CardTitle className="text-base font-bold">Parade State</CardTitle>
-                <p className="text-xs text-muted-foreground">Today · {weekday}</p>
-              </div>
-            </div>
-            <CardAction>
-              <span className="flex items-center gap-1 text-xs font-medium text-muted-foreground group-hover:text-primary transition-colors">
-                View details <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+              <span className="flex items-center gap-1 text-xs font-medium text-white/45 group-hover:text-white/80 transition-colors">
+                View details
+                <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
               </span>
-            </CardAction>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* X / Y fraction */}
-            <div className="flex items-baseline gap-2">
-              <span className="text-5xl font-bold tabular-nums leading-none">{inCamp}</span>
-              <span className="text-2xl font-semibold text-muted-foreground tabular-nums">/ {totalMembers}</span>
-              <span className="text-sm text-muted-foreground ml-1">in camp today</span>
+            </div>
+
+            {/* Big fraction */}
+            <div className="mt-auto pt-10">
+              <div className="flex items-baseline gap-2">
+                <span className="text-6xl lg:text-8xl font-bold tabular-nums leading-none text-white">{inCamp}</span>
+                <span className="text-3xl lg:text-4xl font-semibold text-white/35 tabular-nums">/ {totalMembers}</span>
+              </div>
+              <p className="text-sm text-white/50 mt-2 font-medium">personnel in camp today</p>
             </div>
 
             {/* Progress bar */}
-            <div className="space-y-1">
-              <div className="h-2.5 rounded-full bg-muted overflow-hidden">
+            <div className="mt-6 space-y-1.5">
+              <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
                 <div
-                  className="h-full rounded-full bg-primary transition-all duration-500"
-                  style={{ width: `${pct}%` }}
+                  className="h-full rounded-full transition-all duration-700"
+                  style={{ width: `${pct}%`, background: 'oklch(0.74 0.18 168)' }}
                 />
               </div>
-              <p className="text-xs text-muted-foreground">{pct}% accounted for</p>
+              <p className="text-xs text-white/40">{pct}% accounted for</p>
             </div>
 
             {/* Status chips */}
-            <div className="flex flex-wrap gap-2">
-              <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300">
+            <div className="flex flex-wrap gap-2 mt-5">
+              <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-teal-400/20 text-teal-200 border border-teal-400/20">
                 {inCamp} In Camp
               </span>
               {outOfCamp > 0 && (
-                <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-100 dark:bg-sky-900/50 text-sky-700 dark:text-sky-300">
+                <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-white/10 text-white/70 border border-white/10">
                   {outOfCamp} Out of Camp
                 </span>
               )}
               {medical > 0 && (
-                <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300">
+                <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-white/10 text-white/70 border border-white/10">
                   {medical} Medical / RSO
                 </span>
               )}
               {notUpdated > 0 && (
-                <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-100 dark:bg-rose-900/50 text-rose-700 dark:text-rose-300">
+                <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/25 text-rose-300 border border-rose-400/20">
                   {notUpdated} Not Updated
                 </span>
               )}
             </div>
-          </CardContent>
-        </Card>
-      </Link>
+          </div>
+        </Link>
 
-      {/* Secondary widgets — 2x2 on mobile, 4-col on desktop */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        {/* ── Right 2×2 grid ── */}
+        <div className="grid grid-cols-2 gap-4 lg:flex-1">
 
-        {/* Directory */}
-        <Link href="/directory" className="group block">
-          <Card className="h-full transition-all group-hover:shadow-md group-hover:-translate-y-0.5 cursor-pointer">
-            <CardHeader>
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-100 dark:bg-teal-900/30">
-                <Users className="h-4.5 w-4.5 text-teal-700 dark:text-teal-400" />
+          {/* Directory — violet */}
+          <Link href="/directory" className="group block">
+            <div className="h-full min-h-[220px] rounded-3xl p-5 flex flex-col cursor-pointer transition-all duration-300 group-hover:shadow-xl group-hover:scale-[1.02] bg-violet-50 dark:bg-violet-950/50 border border-violet-100 dark:border-violet-800/30">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-900/60">
+                <Users className="h-4.5 w-4.5 text-violet-600 dark:text-violet-400" />
               </div>
-              <CardAction>
-                <ArrowRight className="h-4 w-4 text-muted-foreground/40 mt-1 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
-              </CardAction>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <CardTitle className="text-base font-bold">Directory</CardTitle>
-              <p className="text-3xl font-bold tabular-nums">{totalMembers}</p>
-              <p className="text-xs text-muted-foreground">course members</p>
-              <div className="flex -space-x-1.5 pt-1">
-                {(profiles ?? []).slice(0, 6).map((p) => (
-                  <div
-                    key={p.id}
-                    className="h-6 w-6 rounded-full bg-violet-100 dark:bg-violet-900/50 border-2 border-card flex items-center justify-center text-[9px] font-bold text-violet-700 dark:text-violet-300 uppercase"
-                  >
-                    {(p.ops_name || p.full_name || '?')[0]}
-                  </div>
-                ))}
-                {totalMembers > 6 && (
-                  <div className="h-6 w-6 rounded-full bg-muted border-2 border-card flex items-center justify-center text-[9px] font-bold text-muted-foreground">
-                    +{totalMembers - 6}
-                  </div>
+              <div className="mt-auto pt-4">
+                <p className="text-[10px] font-bold text-violet-400 dark:text-violet-500 uppercase tracking-widest mb-1">Directory</p>
+                <p className="text-4xl font-bold tabular-nums text-violet-900 dark:text-violet-100">{totalMembers}</p>
+                <p className="text-xs text-violet-400/80 dark:text-violet-500/80 mt-0.5">course members</p>
+                <div className="flex -space-x-1.5 mt-3">
+                  {(profiles ?? []).slice(0, 5).map((p) => (
+                    <div
+                      key={p.id}
+                      className="h-5 w-5 rounded-full bg-violet-200 dark:bg-violet-800 border-2 border-violet-50 dark:border-violet-950 flex items-center justify-center text-[8px] font-bold text-violet-700 dark:text-violet-300 uppercase"
+                    >
+                      {(p.ops_name || p.full_name || '?')[0]}
+                    </div>
+                  ))}
+                  {totalMembers > 5 && (
+                    <div className="h-5 w-5 rounded-full bg-violet-100 dark:bg-violet-900 border-2 border-violet-50 dark:border-violet-950 flex items-center justify-center text-[8px] font-bold text-violet-500">
+                      +{totalMembers - 5}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </Link>
+
+          {/* Roles — amber */}
+          <Link href="/roles" className="group block">
+            <div className="h-full min-h-[220px] rounded-3xl p-5 flex flex-col cursor-pointer transition-all duration-300 group-hover:shadow-xl group-hover:scale-[1.02] bg-amber-50 dark:bg-amber-950/50 border border-amber-100 dark:border-amber-800/30">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-100 dark:bg-amber-900/60">
+                <Briefcase className="h-4.5 w-4.5 text-amber-600 dark:text-amber-400" />
+              </div>
+              <div className="mt-auto pt-4">
+                <p className="text-[10px] font-bold text-amber-400 dark:text-amber-500 uppercase tracking-widest mb-2">Roles</p>
+                {(roles ?? []).length === 0 ? (
+                  <p className="text-xs text-amber-400/70">No roles set up yet.</p>
+                ) : (
+                  <ul className="space-y-1.5">
+                    {(roles ?? []).slice(0, 3).map((role) => {
+                      const holder = role.profiles as { ops_name?: string; full_name?: string } | null
+                      return (
+                        <li key={role.id} className="flex items-center justify-between gap-1">
+                          <span className="text-[11px] text-amber-700/70 dark:text-amber-300/60 truncate">{role.title}</span>
+                          <span className="text-[11px] font-bold text-amber-900 dark:text-amber-100 shrink-0">
+                            {holder ? (holder.ops_name || holder.full_name) : <span className="text-amber-400/50">—</span>}
+                          </span>
+                        </li>
+                      )
+                    })}
+                  </ul>
                 )}
               </div>
-            </CardContent>
-          </Card>
-        </Link>
+            </div>
+          </Link>
 
-        {/* Roles */}
-        <Link href="/roles" className="group block">
-          <Card className="h-full transition-all group-hover:shadow-md group-hover:-translate-y-0.5 cursor-pointer">
-            <CardHeader>
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-100 dark:bg-teal-900/30">
-                <Briefcase className="h-4.5 w-4.5 text-teal-700 dark:text-teal-400" />
+          {/* Lessons — emerald */}
+          <Link href="/lessons" className="group block">
+            <div className="h-full min-h-[220px] rounded-3xl p-5 flex flex-col cursor-pointer transition-all duration-300 group-hover:shadow-xl group-hover:scale-[1.02] bg-emerald-50 dark:bg-emerald-950/50 border border-emerald-100 dark:border-emerald-800/30">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-900/60">
+                <BookOpen className="h-4.5 w-4.5 text-emerald-600 dark:text-emerald-400" />
               </div>
-              <CardAction>
-                <ArrowRight className="h-4 w-4 text-muted-foreground/40 mt-1 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
-              </CardAction>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <CardTitle className="text-base font-bold">Roles</CardTitle>
-              {(roles ?? []).length === 0 ? (
-                <p className="text-xs text-muted-foreground">No roles set up yet.</p>
-              ) : (
-                <ul className="space-y-1.5 pt-1">
-                  {(roles ?? []).map((role) => {
-                    const holder = role.profiles as { ops_name?: string; full_name?: string } | null
-                    return (
-                      <li key={role.id} className="flex items-center justify-between gap-2">
-                        <span className="text-xs text-muted-foreground truncate">{role.title}</span>
-                        <span className="text-xs font-semibold shrink-0">
-                          {holder ? (holder.ops_name || holder.full_name) : <span className="text-muted-foreground/40">TBC</span>}
-                        </span>
-                      </li>
-                    )
-                  })}
-                </ul>
-              )}
-            </CardContent>
-          </Card>
-        </Link>
+              <div className="mt-auto pt-4">
+                <p className="text-[10px] font-bold text-emerald-400 dark:text-emerald-500 uppercase tracking-widest mb-1">Lessons</p>
+                {latestLesson ? (
+                  <>
+                    <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-100 line-clamp-2 leading-snug">{latestLesson.title}</p>
+                    <p className="text-xs text-emerald-500/80 dark:text-emerald-400/60 mt-1">— {lessonAuthor}</p>
+                  </>
+                ) : (
+                  <p className="text-xs text-emerald-400/70">No lessons posted yet.</p>
+                )}
+              </div>
+            </div>
+          </Link>
 
-        {/* Lessons */}
-        <Link href="/lessons" className="group block">
-          <Card className="h-full transition-all group-hover:shadow-md group-hover:-translate-y-0.5 cursor-pointer">
-            <CardHeader>
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-100 dark:bg-teal-900/30">
-                <BookOpen className="h-4.5 w-4.5 text-teal-700 dark:text-teal-400" />
+          {/* Resources — sky */}
+          <Link href="/resources" className="group block">
+            <div className="h-full min-h-[220px] rounded-3xl p-5 flex flex-col cursor-pointer transition-all duration-300 group-hover:shadow-xl group-hover:scale-[1.02] bg-sky-50 dark:bg-sky-950/50 border border-sky-100 dark:border-sky-800/30">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-100 dark:bg-sky-900/60">
+                <FolderOpen className="h-4.5 w-4.5 text-sky-600 dark:text-sky-400" />
               </div>
-              <CardAction>
-                <ArrowRight className="h-4 w-4 text-muted-foreground/40 mt-1 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
-              </CardAction>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <CardTitle className="text-base font-bold">Lessons Learned</CardTitle>
-              {latestLesson ? (
-                <div className="space-y-1 pt-1">
-                  <p className="text-xs text-teal-600 dark:text-teal-400 font-semibold">Latest gem</p>
-                  <p className="text-sm font-medium line-clamp-3 leading-snug">{latestLesson.title}</p>
-                  <p className="text-xs text-muted-foreground">— {lessonAuthor}</p>
-                </div>
-              ) : (
-                <p className="text-xs text-muted-foreground">No lessons posted yet.</p>
-              )}
-            </CardContent>
-          </Card>
-        </Link>
+              <div className="mt-auto pt-4">
+                <p className="text-[10px] font-bold text-sky-400 dark:text-sky-500 uppercase tracking-widest mb-1">Resources</p>
+                <p className="text-4xl font-bold tabular-nums text-sky-900 dark:text-sky-100">{resourceCount}</p>
+                <p className="text-xs text-sky-400/80 dark:text-sky-500/80 mt-0.5">
+                  {resourceCount === 0 ? 'No files yet' : `${categoryCount} ${categoryCount === 1 ? 'category' : 'categories'}`}
+                </p>
+              </div>
+            </div>
+          </Link>
 
-        {/* Resources */}
-        <Link href="/resources" className="group block">
-          <Card className="h-full transition-all group-hover:shadow-md group-hover:-translate-y-0.5 cursor-pointer">
-            <CardHeader>
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-100 dark:bg-teal-900/30">
-                <FolderOpen className="h-4.5 w-4.5 text-teal-700 dark:text-teal-400" />
-              </div>
-              <CardAction>
-                <ArrowRight className="h-4 w-4 text-muted-foreground/40 mt-1 transition-transform group-hover:translate-x-0.5 group-hover:text-primary" />
-              </CardAction>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <CardTitle className="text-base font-bold">Resources</CardTitle>
-              <p className="text-3xl font-bold tabular-nums">{resourceCount}</p>
-              <p className="text-xs text-muted-foreground">
-                {resourceCount === 0 ? 'No files yet' : `${categoryCount} ${categoryCount === 1 ? 'category' : 'categories'}`}
-              </p>
-            </CardContent>
-          </Card>
-        </Link>
+        </div>
       </div>
     </div>
   )
