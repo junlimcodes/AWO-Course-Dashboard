@@ -3,8 +3,9 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { ParadeGrid } from '@/components/parade-state/parade-grid'
 import { toWeekStartStr, parseWeekStart, toDayIndex } from '@/lib/date-utils'
-import { PARADE_STATUS_LABELS, PARADE_STATUS_COLORS, type ParadeStatus, type Profile, type ParadeStateEntry } from '@/lib/types'
+import { PARADE_STATUS_COLORS, type ParadeStatus, type Profile, type ParadeStateEntry } from '@/lib/types'
 import { cn } from '@/lib/utils'
+import { CalendarRange } from 'lucide-react'
 
 export const metadata: Metadata = { title: 'Parade State' }
 
@@ -64,11 +65,14 @@ export default async function ParadeStatePage({
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Parade State</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Click any cell in your row to update your status.
-        </p>
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 rounded-xl bg-teal-100 dark:bg-teal-900/40 flex items-center justify-center shrink-0">
+          <CalendarRange className="h-5 w-5 text-teal-600 dark:text-teal-400" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Parade State</h1>
+          <p className="mt-0.5 text-sm text-muted-foreground">Click any cell in your row to update your status.</p>
+        </div>
       </div>
 
       {/* Today's breakdown — only shown for current week */}
@@ -88,7 +92,7 @@ export default async function ParadeStatePage({
                 <div
                   key={status}
                   className={cn(
-                    'rounded-xl p-4 border',
+                    'rounded-2xl p-4 border',
                     PARADE_STATUS_COLORS[status]
                   )}
                 >
@@ -113,7 +117,7 @@ export default async function ParadeStatePage({
 
             {/* Not Updated */}
             {notUpdated.length > 0 && (
-              <div className="rounded-xl p-4 border bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-900/20 dark:text-rose-300 dark:border-rose-800">
+              <div className="rounded-2xl p-4 border bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-900/20 dark:text-rose-300 dark:border-rose-800">
                 <div className="flex items-center gap-2 mb-3">
                   <span className="h-2 w-2 rounded-full bg-rose-500 shrink-0" />
                   <span className="text-sm font-bold">Not Updated</span>

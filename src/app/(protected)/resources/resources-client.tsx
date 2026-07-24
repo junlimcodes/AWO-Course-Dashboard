@@ -1,11 +1,9 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { FileText, File, Download, Trash2, Plus, Loader2 } from 'lucide-react'
+import { FileText, File, Download, Trash2, Plus } from 'lucide-react'
 import { toast } from 'sonner'
 import { UploadDialog } from '@/components/resources/upload-dialog'
 import { deleteResource } from './actions'
@@ -27,11 +25,13 @@ function ResourceCard({
   signedUrl,
   canDelete,
   onDelete,
+  animDelay,
 }: {
   resource: Resource & { profiles: Profile | null }
   signedUrl: string | null
   canDelete: boolean
   onDelete: () => void
+  animDelay: number
 }) {
   const date = new Date(resource.created_at).toLocaleDateString('en-SG', {
     day: 'numeric',
@@ -46,63 +46,64 @@ function ResourceCard({
     : 'Unknown'
 
   return (
-    <Card>
-      <CardContent className="pt-4 pb-4">
-        <div className="flex items-start gap-3">
-          <div className="mt-0.5">{fileIcon(resource.file_name)}</div>
-          <div className="min-w-0 flex-1">
-            <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0">
-                <p className="font-medium text-sm leading-none truncate">{resource.title}</p>
-                {resource.description && (
-                  <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
-                    {resource.description}
-                  </p>
-                )}
-                <div className="mt-2 flex items-center gap-2 flex-wrap">
-                  <span className="text-xs text-muted-foreground">{uploaderName}</span>
-                  <span className="text-muted-foreground/40 text-xs">·</span>
-                  <span className="text-xs text-muted-foreground">{date}</span>
-                  {resource.file_size && (
-                    <>
-                      <span className="text-muted-foreground/40 text-xs">·</span>
-                      <span className="text-xs text-muted-foreground">
-                        {formatFileSize(resource.file_size)}
-                      </span>
-                    </>
-                  )}
-                </div>
-              </div>
-              <div className="flex items-center gap-1 shrink-0">
-                {signedUrl && (
-                  <a
-                    href={signedUrl}
-                    download={resource.file_name}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center h-7 w-7 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                    title="Download"
-                  >
-                    <Download className="h-3.5 w-3.5" />
-                    <span className="sr-only">Download</span>
-                  </a>
-                )}
-                {canDelete && (
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                    onClick={onDelete}
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
+    <div
+      className="rounded-3xl p-4 border bg-sky-50/50 dark:bg-sky-950/30 border-sky-100 dark:border-sky-800/30 transition-all hover:shadow-md"
+      style={{ animation: `fade-up 0.5s ease ${animDelay}s both` }}
+    >
+      <div className="flex items-start gap-3">
+        <div className="mt-0.5">{fileIcon(resource.file_name)}</div>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <p className="font-medium text-sm leading-none truncate">{resource.title}</p>
+              {resource.description && (
+                <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
+                  {resource.description}
+                </p>
+              )}
+              <div className="mt-2 flex items-center gap-2 flex-wrap">
+                <span className="text-xs text-muted-foreground">{uploaderName}</span>
+                <span className="text-muted-foreground/40 text-xs">·</span>
+                <span className="text-xs text-muted-foreground">{date}</span>
+                {resource.file_size && (
+                  <>
+                    <span className="text-muted-foreground/40 text-xs">·</span>
+                    <span className="text-xs text-muted-foreground">
+                      {formatFileSize(resource.file_size)}
+                    </span>
+                  </>
                 )}
               </div>
             </div>
+            <div className="flex items-center gap-1 shrink-0">
+              {signedUrl && (
+                <a
+                  href={signedUrl}
+                  download={resource.file_name}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center h-7 w-7 rounded-lg text-sky-400 hover:text-sky-700 dark:hover:text-sky-300 hover:bg-sky-100 dark:hover:bg-sky-900/40 transition-colors"
+                  title="Download"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  <span className="sr-only">Download</span>
+                </a>
+              )}
+              {canDelete && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                  onClick={onDelete}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </Button>
+              )}
+            </div>
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   )
 }
 
@@ -166,13 +167,14 @@ export function ResourcesClient({
                   No files in this category.
                 </p>
               ) : (
-                filtered.map((resource) => (
+                filtered.map((resource, idx) => (
                   <ResourceCard
                     key={resource.id}
                     resource={resource}
                     signedUrl={signedUrls[resource.file_url] ?? null}
                     canDelete={resource.uploader_id === currentUserId || isAdmin}
                     onDelete={() => handleDelete(resource.id, resource.file_url)}
+                    animDelay={Math.min(idx * 0.06, 0.45)}
                   />
                 ))
               )}

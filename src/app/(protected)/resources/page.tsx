@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
 import { ResourcesClient } from './resources-client'
+import { FolderOpen } from 'lucide-react'
 
 export const metadata: Metadata = { title: 'Resources' }
 
@@ -38,11 +39,14 @@ export default async function ResourcesPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Resources</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Course notes, slides, and reference documents.
-        </p>
+      <div className="flex items-center gap-3">
+        <div className="h-10 w-10 rounded-xl bg-sky-100 dark:bg-sky-900/40 flex items-center justify-center shrink-0">
+          <FolderOpen className="h-5 w-5 text-sky-600 dark:text-sky-400" />
+        </div>
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Resources</h1>
+          <p className="mt-0.5 text-sm text-muted-foreground">Course notes, slides, and reference documents.</p>
+        </div>
       </div>
       <ResourcesClient
         resources={(resources as any) ?? []}

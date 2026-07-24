@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -14,7 +13,6 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { Switch } from '@/components/ui/switch'
 import { Plus, Loader2, KeyRound, Shield, ShieldOff } from 'lucide-react'
 import { toast } from 'sonner'
@@ -100,7 +98,7 @@ function CreateUserDialog({
               </datalist>
             </div>
           </div>
-          <div className="flex items-center gap-3 rounded-lg border p-3">
+          <div className="flex items-center gap-3 rounded-2xl border border-slate-200 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-900/30 p-3">
             <Switch id="is-admin" checked={isAdmin} onCheckedChange={setIsAdmin} />
             <Label htmlFor="is-admin" className="cursor-pointer">
               Grant admin access
@@ -184,85 +182,82 @@ export function AdminClient({ profiles, currentUserId }: { profiles: Profile[]; 
 
   return (
     <>
-      <div className="space-y-6">
-        <Card>
-          <CardHeader className="pb-3">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-base">Course Members</CardTitle>
-              <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1.5">
-                <Plus className="h-4 w-4" />
-                Add Member
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="space-y-1">
-              {profiles.map((profile, idx) => {
-                const initials = (profile.ops_name ?? profile.full_name).slice(0, 2).toUpperCase()
-                const isSelf = profile.id === currentUserId
-                return (
-                  <div key={profile.id}>
-                    {idx > 0 && <Separator />}
-                    <div className="flex items-center gap-3 py-3">
-                      <Avatar className="h-8 w-8 shrink-0">
-                        <AvatarFallback className="bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900 text-xs font-semibold">
-                          {initials}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <p className="text-sm font-medium leading-none">
-                            {profile.full_name}
-                            {profile.ops_name && (
-                              <span className="text-muted-foreground font-normal"> ({profile.ops_name})</span>
-                            )}
-                          </p>
-                          {profile.is_admin && (
-                            <Badge variant="secondary" className="text-xs py-0 h-4">Admin</Badge>
-                          )}
-                          {isSelf && (
-                            <Badge variant="outline" className="text-xs py-0 h-4">You</Badge>
-                          )}
-                        </div>
-                        <p className="mt-0.5 text-xs text-muted-foreground">
-                          @{profile.username}
-                          {profile.appointment && ` · ${profile.appointment}`}
-                        </p>
-                      </div>
-                      <div className="flex items-center gap-1 shrink-0">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                          onClick={() => setResetTarget(profile)}
-                          title="Reset password"
-                        >
-                          <KeyRound className="h-3.5 w-3.5" />
-                        </Button>
-                        {!isSelf && (
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                            onClick={() => toggleAdmin(profile)}
-                            title={profile.is_admin ? 'Remove admin' : 'Make admin'}
-                            disabled={isPending}
-                          >
-                            {profile.is_admin ? (
-                              <ShieldOff className="h-3.5 w-3.5" />
-                            ) : (
-                              <Shield className="h-3.5 w-3.5" />
-                            )}
-                          </Button>
-                        )}
-                      </div>
-                    </div>
+      <div className="rounded-3xl border border-slate-200 dark:border-slate-700/50 bg-slate-50/30 dark:bg-slate-900/20 overflow-hidden">
+        {/* Header row */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-700/50">
+          <p className="text-sm font-bold">Course Members</p>
+          <Button size="sm" onClick={() => setCreateOpen(true)} className="gap-1.5">
+            <Plus className="h-4 w-4" />
+            Add Member
+          </Button>
+        </div>
+
+        {/* Member rows */}
+        <div>
+          {profiles.map((profile, idx) => {
+            const initials = (profile.ops_name ?? profile.full_name).slice(0, 2).toUpperCase()
+            const isSelf = profile.id === currentUserId
+            return (
+              <div
+                key={profile.id}
+                className={`flex items-center gap-3 px-5 py-3 transition-colors hover:bg-slate-100/70 dark:hover:bg-slate-800/40 ${idx > 0 ? 'border-t border-slate-200 dark:border-slate-700/40' : ''}`}
+                style={{ animation: `fade-up 0.4s ease ${Math.min(idx * 0.05, 0.4)}s both` }}
+              >
+                {/* Avatar */}
+                <div className="h-8 w-8 rounded-full bg-teal-200 dark:bg-teal-800 flex items-center justify-center text-xs font-bold text-teal-800 dark:text-teal-100 shrink-0 uppercase">
+                  {initials}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="text-sm font-medium leading-none">
+                      {profile.full_name}
+                      {profile.ops_name && (
+                        <span className="text-muted-foreground font-normal"> ({profile.ops_name})</span>
+                      )}
+                    </p>
+                    {profile.is_admin && (
+                      <Badge variant="secondary" className="text-xs py-0 h-4">Admin</Badge>
+                    )}
+                    {isSelf && (
+                      <Badge variant="outline" className="text-xs py-0 h-4">You</Badge>
+                    )}
                   </div>
-                )
-              })}
-            </div>
-          </CardContent>
-        </Card>
+                  <p className="mt-0.5 text-xs text-muted-foreground">
+                    @{profile.username}
+                    {profile.appointment && ` · ${profile.appointment}`}
+                  </p>
+                </div>
+                <div className="flex items-center gap-1 shrink-0">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                    onClick={() => setResetTarget(profile)}
+                    title="Reset password"
+                  >
+                    <KeyRound className="h-3.5 w-3.5" />
+                  </Button>
+                  {!isSelf && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                      onClick={() => toggleAdmin(profile)}
+                      title={profile.is_admin ? 'Remove admin' : 'Make admin'}
+                      disabled={isPending}
+                    >
+                      {profile.is_admin ? (
+                        <ShieldOff className="h-3.5 w-3.5" />
+                      ) : (
+                        <Shield className="h-3.5 w-3.5" />
+                      )}
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )
+          })}
+        </div>
       </div>
 
       <CreateUserDialog open={createOpen} onOpenChange={setCreateOpen} />

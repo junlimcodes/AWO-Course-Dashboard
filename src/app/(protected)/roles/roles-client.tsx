@@ -1,10 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
   Dialog,
   DialogContent,
@@ -38,11 +35,13 @@ function RoleCard({
   isAdmin,
   onEdit,
   onDelete,
+  animDelay,
 }: {
   role: CourseRole & { profiles: Profile | null }
   isAdmin: boolean
   onEdit: () => void
   onDelete: () => void
+  animDelay: number
 }) {
   const holder = role.profiles
   const initials = holder
@@ -50,64 +49,63 @@ function RoleCard({
     : null
 
   return (
-    <Card>
-      <CardContent className="pt-5 pb-5">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0 flex-1">
-            <p className="font-semibold text-sm leading-none">{role.title}</p>
-            {role.description && (
-              <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
-                {role.description}
-              </p>
-            )}
-            <div className="mt-3">
-              {holder ? (
-                <div className="flex items-center gap-2">
-                  <Avatar className="h-6 w-6">
-                    <AvatarFallback className="bg-zinc-800 text-white dark:bg-zinc-200 dark:text-zinc-900 text-xs font-semibold">
-                      {initials}
-                    </AvatarFallback>
-                  </Avatar>
-                  <span className="text-sm font-medium">
-                    {holder.full_name}
-                    {holder.ops_name && (
-                      <span className="text-muted-foreground font-normal">
-                        {' '}({holder.ops_name})
-                      </span>
-                    )}
-                  </span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <UserMinus className="h-4 w-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground italic">Vacant</span>
-                </div>
-              )}
-            </div>
-          </div>
-          {isAdmin && (
-            <div className="flex items-center gap-1 shrink-0">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7 text-muted-foreground hover:text-foreground"
-                onClick={onEdit}
-              >
-                <Pencil className="h-3.5 w-3.5" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7 text-muted-foreground hover:text-destructive"
-                onClick={onDelete}
-              >
-                <Trash2 className="h-3.5 w-3.5" />
-              </Button>
-            </div>
+    <div
+      className="rounded-3xl p-5 border bg-amber-50/50 dark:bg-amber-950/30 border-amber-100 dark:border-amber-800/30 transition-all hover:shadow-md"
+      style={{ animation: `fade-up 0.5s ease ${animDelay}s both` }}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold text-sm leading-none">{role.title}</p>
+          {role.description && (
+            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+              {role.description}
+            </p>
           )}
+          <div className="mt-3">
+            {holder ? (
+              <div className="flex items-center gap-2">
+                <div className="h-6 w-6 rounded-full bg-amber-200 dark:bg-amber-800 flex items-center justify-center text-[10px] font-bold text-amber-800 dark:text-amber-100 shrink-0 uppercase">
+                  {initials}
+                </div>
+                <span className="text-sm font-medium">
+                  {holder.full_name}
+                  {holder.ops_name && (
+                    <span className="text-muted-foreground font-normal">
+                      {' '}({holder.ops_name})
+                    </span>
+                  )}
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <UserMinus className="h-4 w-4 text-amber-400/60" />
+                <span className="text-sm text-amber-500/60 italic">Vacant</span>
+              </div>
+            )}
+          </div>
         </div>
-      </CardContent>
-    </Card>
+        {isAdmin && (
+          <div className="flex items-center gap-1 shrink-0">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 text-amber-400 hover:text-amber-700 dark:hover:text-amber-300 hover:bg-amber-100 dark:hover:bg-amber-900/40"
+              onClick={onEdit}
+            >
+              <Pencil className="h-3.5 w-3.5" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-7 w-7 text-muted-foreground hover:text-destructive"
+              onClick={onDelete}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
+          </div>
+        )}
+      </div>
+    </div>
   )
 }
 
@@ -226,13 +224,14 @@ export function RolesClient({ roles, profiles, isAdmin }: RolesClientProps) {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-          {roles.map((role) => (
+          {roles.map((role, idx) => (
             <RoleCard
               key={role.id}
               role={role}
               isAdmin={isAdmin}
               onEdit={() => setEditingRole(role)}
               onDelete={() => handleDelete(role.id)}
+              animDelay={Math.min(idx * 0.06, 0.45)}
             />
           ))}
         </div>
